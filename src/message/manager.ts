@@ -2,7 +2,7 @@ import type { ChatCompletionMessageParam } from "openai/resources/chat/completio
 
 type Exchange = {
   userMessage: ChatCompletionMessageParam;
-  llmResponse: ChatCompletionMessageParam | null;
+  llmResponse: ChatCompletionMessageParam;
 };
 
 export default class MessageManager {
@@ -30,9 +30,7 @@ export default class MessageManager {
     const exchange = this.exchanges.shift();
     if (exchange) {
       this.conversation.push(exchange.userMessage);
-      if (exchange.llmResponse) {
-        this.conversation.push(exchange.llmResponse);
-      }
+      this.conversation.push(exchange.llmResponse);
     }
     return this.conversation;
   }

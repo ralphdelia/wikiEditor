@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import readline from "readline";
 import type { ChatCompletionMessageParam } from "openai/resources";
+import { fetch } from "bun";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY, // Ensure your API key is set in the environment
@@ -36,6 +37,16 @@ async function chatLoop() {
     console.log(`Assistant: ${assistantMessage}`);
 
     conversation.push({ role: "assistant", content: assistantMessage });
+    fetch("localhost:3000/messages", {
+      method: "post",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        messages: [
+          { role: "user", content: userInput },
+          response.choices[0].message,
+        ],
+      }),
+    }).catch(console.error);
   }
   rl.close();
 }

@@ -1,3 +1,4 @@
+import { WikiEditor } from "../agents/wikiEditor";
 import MessageManager from "./manager";
 
 export default class MessageProcessor {
@@ -8,7 +9,7 @@ export default class MessageProcessor {
       const conversation = this.manager.getNextConversationStep();
       console.log("Processing conversation:", conversation);
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await WikiEditor.exe(JSON.stringify(conversation, null, 2));
     }
   }
 
