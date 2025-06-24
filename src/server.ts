@@ -2,18 +2,12 @@ import { Hono } from "hono";
 import { serve } from "bun";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import MessageManager from "./message/manager";
 import MessageProcessor from "./message/processor";
+import { Bus } from "./bus/bus";
 
 const messagesSchema = z.object({
-  messages: z.array(
-    z.object({
-      role: z.enum(["system", "user", "assistant", "tool"]),
-      content: z.string().nullable(),
-      name: z.string().optional(),
-    }),
-  ),
+  messages: z.array(z.any()),
 });
 
 const app = new Hono();
@@ -32,7 +26,10 @@ app.post(
   }),
   (c) => {
     const { messages } = c.req.valid("json");
-    manager.addMessages(messages as ChatCompletionMessageParam[]);
+    messages.forEach((message) => {
+      Bus.publish("message-incomming", { id: crypto.randomUUID(), message });
+    });
+
     return c.json({ status: "Message received" });
   },
 );

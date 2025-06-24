@@ -1,5 +1,5 @@
 interface EventMap {
-  "message-created": { message: string };
+  "message-incoming": { id: string; message: string };
 }
 
 export namespace Bus {
@@ -14,8 +14,11 @@ export namespace Bus {
     return () => eventBus.removeEventListener(eventType, listener);
   }
 
-  export function publish<T = unknown>(eventType: string, payload: T): void {
-    const evt = new CustomEvent<T>(eventType, { detail: payload });
+  export function publish<K extends keyof EventMap>(
+    eventType: string,
+    payload: EventMap[K],
+  ): void {
+    const evt = new CustomEvent(eventType, { detail: payload });
     eventBus.dispatchEvent(evt);
   }
 }
