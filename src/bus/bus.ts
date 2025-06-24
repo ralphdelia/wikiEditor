@@ -1,9 +1,13 @@
+interface EventMap {
+  "message-created": { message: string };
+}
+
 export namespace Bus {
   const eventBus = new EventTarget();
 
-  export function subscribe<T = unknown>(
+  export function subscribe<K extends keyof EventMap>(
     eventType: string,
-    handler: (event: CustomEvent<T>) => void,
+    handler: (event: CustomEvent<EventMap[K]>) => void,
   ): () => void {
     const listener = handler as EventListener;
     eventBus.addEventListener(eventType, listener);

@@ -1,5 +1,5 @@
 import path from "path";
-import { outVault } from "../../vault";
+import { outVault } from "../vault";
 import { tool } from "@openai/agents";
 import fs from "fs";
 import { z } from "zod";

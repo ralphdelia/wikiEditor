@@ -2,7 +2,7 @@ import { z } from "zod";
 import fs from "fs";
 import path from "path";
 import { tool } from "@openai/agents";
-import { outVault } from "../../vault";
+import { outVault } from "../vault";
 
 export const search = tool({
   name: "search",

@@ -1,14 +1,14 @@
 import { Agent, AgentHooks, run, tool } from "@openai/agents";
 import INSTRUCTIONS from "./prompts/wikiEditor.txt";
-import { write } from "./tools/write";
-import { read } from "./tools/read";
-import { list } from "./tools/list";
-import { glob } from "./tools/glob";
-import { move } from "./tools/mv";
-import { patch } from "./tools/patch";
-import { remove } from "./tools/rm";
-import { search } from "./tools/search";
-import { mkdir } from "./tools/mkdir";
+import { write } from "../tools/write";
+import { read } from "../tools/read";
+import { list } from "../tools/list";
+import { glob } from "../tools/glob";
+import { move } from "../tools/mv";
+import { patch } from "../tools/patch";
+import { remove } from "../tools/rm";
+import { search } from "../tools/search";
+import { mkdir } from "../tools/mkdir";
 
 namespace WikiEditor {
   let agent: Agent;
