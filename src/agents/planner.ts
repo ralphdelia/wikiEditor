@@ -7,9 +7,11 @@ import { list } from "../tools/list";
 import { glob } from "../tools/glob";
 import { todoWrite } from "../tools/todo";
 import { Service } from "../services";
+import { Log } from "../log";
 
 export namespace Planner {
   let agent: Agent<{ id: string; prompt: string }, "text">;
+  const log = Log.create("planner");
 
   export async function runAgent(prompt: string, id: string) {
     if (!agent) {
@@ -20,12 +22,13 @@ export namespace Planner {
       });
     }
 
-    Bus.publish("agent-event", { agent: agent.name, type: "planner-start" });
+    log.info("agent-event", { agent: agent.name, type: "planner-start" });
+
     const res = await run(agent, prompt, { context: { id, prompt } });
-    Bus.publish("agent-event", {
+    log.info("agent-event", {
       agent: agent.name,
       type: "planner-end",
-      desc: res.finalOutput,
+      description: res.finalOutput || "",
     });
     return res;
   }

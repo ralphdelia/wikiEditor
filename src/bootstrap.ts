@@ -1,5 +1,5 @@
 import { Service } from "./services";
-import "./logging";
+import "./log";
 import "./todo/index";
 import "./agents/planner";
 import "./agents/wikiEditor";

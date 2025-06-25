@@ -4,8 +4,10 @@ import { serve } from "bun";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { Bus } from "./bus";
+import { Log } from "./log";
 
 const app = new Hono();
+let log = Log.create("api");
 
 app.post(
   "/messages",
@@ -22,9 +24,10 @@ app.post(
   ),
   (c) => {
     const { messages } = c.req.valid("json");
-    console.log(messages);
     messages.forEach((message) => {
-      Bus.publish("message-incoming", { id: crypto.randomUUID(), message });
+      const payload = { id: crypto.randomUUID(), message };
+      log.info("message-incoming", { id: payload.id });
+      Bus.publish("message-incoming", payload);
     });
 
     return c.json({ status: "Message received" });

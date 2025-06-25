@@ -12,9 +12,11 @@ import { mkdir } from "../tools/mkdir";
 import { Bus } from "../bus";
 import { Todo } from "../todo";
 import { Service } from "../services";
+import { Log } from "../log";
 
 export namespace WikiEditor {
   let agent: Agent;
+  let log = Log.create("wikieditor");
 
   const runAgent = async (id: string, prompt: string) => {
     if (!agent) {
@@ -26,7 +28,7 @@ export namespace WikiEditor {
     }
 
     for (const todo of Todo.get(id) || []) {
-      Bus.publish("agent-event", {
+      log.info("agent-event", {
         agent: agent.name,
         type: "todo-start",
         desc: todo.action,
@@ -41,7 +43,8 @@ export namespace WikiEditor {
         `,
       );
       todo.status = "completed";
-      Bus.publish("agent-event", {
+
+      log.info("agent-event", {
         agent: agent.name,
         type: "todo-end",
         desc: todo.action,

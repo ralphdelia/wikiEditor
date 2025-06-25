@@ -2,6 +2,9 @@ import { tool, RunContext } from "@openai/agents";
 import { z } from "zod";
 import { Bus } from "../bus";
 import { Todo } from "../todo";
+import { Log } from "../log";
+
+let log = Log.create("todo");
 
 export const todoWrite = tool({
   name: "todoWrite",
@@ -14,9 +17,19 @@ export const todoWrite = tool({
     opt?: RunContext<{ id: string; prompt: string }>,
   ) => {
     const todos = args.todos;
-    const id = opt?.context?.id ?? "unknown";
+    let id = opt?.context?.id;
     const prompt = opt?.context?.prompt ?? "";
 
+    if (!id) {
+      log.warn("No id passed in todoWrite context.");
+      id = "unknonwn";
+    }
+
+    log.info("todo-publish", {
+      run: id,
+      prompt: prompt.slice(0, 60),
+      todos: todos.map((t, i) => `${i + 1}. ${t.action}`).join(".\n"),
+    });
     Bus.publish("todo-publish", { todos, id, prompt });
 
     return {
