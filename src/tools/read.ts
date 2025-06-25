@@ -7,12 +7,12 @@ import { z } from "zod";
 export const read = tool({
   name: "read",
   description:
-    "Read a UTF-8 encoded Markdown file from the output vault. The path should be relative to the vault root.",
+    "Read a UTF-8 markdown file from the vault; path relative to vault root.",
   parameters: z.object({
     path: z
       .string()
       .describe(
-        "Path to the file, relative to the vault root. Must end with '.md'.",
+        "File path relative to vault root; must end in '.md'.",
       ),
   }),
   execute: async ({ path: p }) => {

@@ -6,15 +6,15 @@ import { z } from "zod";
 export const glob = tool({
   name: "glob",
   description:
-    "Search for files in the output vault using a glob pattern. Pattern is relative to the vault root.",
+    "Search for files in the output vault using a glob pattern relative to the vault root.",
   parameters: z.object({
     pattern: z
       .string()
-      .describe("Glob pattern to match files (e.g. '**/*.md')"),
+      .describe("Glob pattern to match files, e.g. '**/*.md' relative to the vault root."),
     path: z
       .string()
       .describe(
-        "Optional directory relative to the vault root. Defaults to vault root. Use empty string to omit.",
+        "Optional subdirectory relative to the vault root; defaults to root. Use empty string to search root.",
       ),
   }),
   execute: async ({ pattern, path: relDir }) => {

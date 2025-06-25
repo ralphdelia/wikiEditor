@@ -7,13 +7,13 @@ import { outVault } from "../vault";
 export const search = tool({
   name: "search",
   description:
-    "Search for a text term across all files in the vault. Matches are case-insensitive.",
+    "Search for a term in vault markdown files case-insensitively across optional subdirectory.",
   parameters: z.object({
-    term: z.string().describe("The search term to look for in file contents"),
+    term: z.string().describe("Search term to match in file contents"),
     path: z
       .string()
       .describe(
-        "Optional directory to search in, relative to the vault root use. Use emptry string to omit.",
+        "Optional subdirectory relative to vault root; use empty string to search root.",
       ),
   }),
   execute: async ({ term, path: relDir }) => {

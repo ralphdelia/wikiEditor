@@ -7,10 +7,10 @@ import { z } from "zod";
 export const list = tool({
   name: "list",
   description:
-    "List all files in the output vault, recursively. Returns full paths relative to the vault root.",
+    "List all files in the output vault recursively. Returns file paths relative to the vault root.",
   parameters: z
     .object({})
-    .describe("No parameters are required to list all files in the vault."),
+    .describe("No parameters; lists all files in the vault recursively relative to the vault root."),
   execute: async () => {
     const results: string[] = [];
     const stack: string[] = [outVault];
