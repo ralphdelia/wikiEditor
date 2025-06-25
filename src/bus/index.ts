@@ -1,12 +1,16 @@
-interface EventMap {
-  "message-incoming": { id: string; message: string };
-}
+import { Todo } from "../todo";
 
 export namespace Bus {
+  export interface EventMap {
+    "message-incoming": { id: string; message: string };
+    "todo-publish": { id: string; todos: Todo.TodoInfo[]; prompt: string };
+    "service-init": { name: string };
+    "agent-event": { agent: string; type: string; desc?: string };
+  }
   const eventBus = new EventTarget();
 
   export function subscribe<K extends keyof EventMap>(
-    eventType: string,
+    eventType: K,
     handler: (event: CustomEvent<EventMap[K]>) => void,
   ): () => void {
     const listener = handler as EventListener;
@@ -15,7 +19,7 @@ export namespace Bus {
   }
 
   export function publish<K extends keyof EventMap>(
-    eventType: string,
+    eventType: K,
     payload: EventMap[K],
   ): void {
     const evt = new CustomEvent(eventType, { detail: payload });

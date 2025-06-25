@@ -1,8 +1,9 @@
+import "./bootstrap";
 import { Hono } from "hono";
 import { serve } from "bun";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import { Bus } from "./bus/bus";
+import { Bus } from "./bus";
 
 const app = new Hono();
 
@@ -21,8 +22,9 @@ app.post(
   ),
   (c) => {
     const { messages } = c.req.valid("json");
+    console.log(messages);
     messages.forEach((message) => {
-      Bus.publish("message-incomming", { id: crypto.randomUUID(), message });
+      Bus.publish("message-incoming", { id: crypto.randomUUID(), message });
     });
 
     return c.json({ status: "Message received" });
