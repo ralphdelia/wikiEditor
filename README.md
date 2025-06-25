@@ -1,16 +1,45 @@
-# kgraph
+# wikiEditor
 
-To install dependencies:
+A wiki editing tool powered by OpenAI agents and Bun.
+
+## Features
+
+- Interactive CLI for authoring and editing wikis
+- Agent-driven automation for file operations (read, write, list, glob, mv, patch, rm, search, mkdir)
+- HTTP server for receiving and processing messages
+
+## Prerequisites
+
+- Bun v1.2.1 or higher
+- An OpenAI API key
+
+## Installation
 
 ```bash
 bun install
 ```
 
-To run:
+## Configuration
+
+Set your OpenAI API key:
 
 ```bash
-bun run index.ts
+export OPENAI_API_KEY="your_api_key_here"
 ```
 
-This project was created using `bun init` in bun v1.2.1. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
-# note-vault
+## Usage
+
+1. Start the server:
+
+```bash
+bun run src/server.ts
+```
+
+2. In another terminal, launch the CLI:
+
+```bash
+bun run src/index.ts
+```
+```
+Enter multi-line prompts; submit by pressing Enter on an empty line.
+```
