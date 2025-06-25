@@ -21,16 +21,13 @@ export namespace Planner {
         tools: [read, search, list, glob, todoWrite],
       });
     }
-
-    log.info("agent-event", { agent: agent.name, type: "planner-start" });
-
-    const res = await run(agent, prompt, { context: { id, prompt } });
-    log.info("agent-event", {
-      agent: agent.name,
-      type: "planner-end",
-      description: res.finalOutput || "",
-    });
-    return res;
+    try {
+      log.info("planner start", { id });
+      const res = await run(agent, prompt, { context: { id, prompt } });
+      return res;
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   Service.register("planner", () => {

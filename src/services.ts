@@ -16,7 +16,6 @@ export namespace Service {
       try {
         fn();
         log.info(`${name} service started`, {});
-        console.log(`Initialized service: ${name}`);
       } catch (err) {
         log.error(`${name} service caused an error when initalizing`);
       }

@@ -3,12 +3,12 @@ import { z } from "zod";
 import { Bus } from "../bus";
 import { Todo } from "../todo";
 import { Log } from "../log";
-
+import INSTRUCTIONS from "./todoWrite.txt";
 let log = Log.create("todo");
 
 export const todoWrite = tool({
   name: "todoWrite",
-  description: "",
+  description: INSTRUCTIONS,
   parameters: z.object({
     todos: z.array(Todo.TodoInfoSchema).describe("the updated todo list"),
   }),
@@ -28,7 +28,7 @@ export const todoWrite = tool({
     log.info("todo-publish", {
       run: id,
       prompt: prompt.slice(0, 60),
-      todos: todos.map((t, i) => `${i + 1}. ${t.action}`).join(".\n"),
+      todos: "\n" + todos.map((t, i) => `${i + 1}. ${t.action}`).join(".\n"),
     });
     Bus.publish("todo-publish", { todos, id, prompt });
 
@@ -42,24 +42,24 @@ export const todoWrite = tool({
   },
 });
 
-export const todoRead = tool({
-  name: "todoRead",
-  description: "",
-  parameters: z.object({}),
-  execute: async (empty, opt?: RunContext<{ id: string }>) => {
-    const id = opt?.context.id;
-    const todos = Todo.get(id!);
+// export const todoRead = tool({
+//   name: "todoRead",
+//   description: "",
+//   parameters: z.object({}),
+//   execute: async (empty, opt?: RunContext<{ id: string }>) => {
+//     const id = opt?.context.id;
+//     const todos = Todo.get(id!);
 
-    const title = Array.isArray(todos)
-      ? `${todos.filter((t) => t.status !== "completed").length} todos`
-      : todos;
+//     const title = Array.isArray(todos)
+//       ? `${todos.filter((t) => t.status !== "completed").length} todos`
+//       : todos;
 
-    return {
-      output: JSON.stringify(todos, null, 2),
-      metadata: {
-        title,
-        todos,
-      },
-    };
-  },
-});
+//     return {
+//       output: JSON.stringify(todos, null, 2),
+//       metadata: {
+//         title,
+//         todos,
+//       },
+//     };
+//   },
+// });

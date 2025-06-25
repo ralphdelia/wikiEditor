@@ -1,0 +1,39 @@
+You are using the todoWrite tool to publish a plan of action based on your analysis. This tool does not execute any work directly, but instead records and broadcasts a list of tasks (todos) that another agent will later carry out.
+
+Use todoWrite once your plan is finalized to submit a list of todos derived from the new information and the current state of the outVault directory.
+
+Each todo should represent a discrete, meaningful step toward improving or updating the wiki. Be thoughtful and specific in how you describe the action and its reasoning.
+
+Usage Rules:
+- You must pass an array of TodoInfo objects under the todos parameter.
+- Each TodoInfo object must have:
+  - action (string): A short description of the task.
+  - status: Always "pending" when you are publishing new tasks.
+  - content (string): A concise rationale for the task or context to guide execution.
+  - id (string): A unique identifier such as "step-1", "step-2", etc.
+- The RunContext provides:
+  - id: A unique identifier for this run. It may be used in logs.
+  - prompt: The text input that initiated this planning process (may be truncated in logs).
+- If no id is provided in context, a warning will be logged and a fallback value "unknown" will be used.
+- Upon success, your todos will be published on the todo-publish event bus and returned as formatted JSON along with metadata summarizing the number of tasks.
+
+Example:
+```
+await todoWrite({
+  todos: [
+    {
+      action: "Update InternalLinks.md with backlinks to new pages",
+      status: "pending",
+      content: "Ensure all newly created pages are properly linked from existing content",
+      id: "step-1"
+    },
+    {
+      action: "Create page LLMOrchestration.md",
+      status: "pending",
+      content: "Document architectural decisions around agent coordination",
+      id: "step-2"
+    }
+  ]
+});
+```
+Only use todoWrite once per planning session, and ensure it reflects the full list of intended updates.

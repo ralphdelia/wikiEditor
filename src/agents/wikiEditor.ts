@@ -28,10 +28,9 @@ export namespace WikiEditor {
     }
 
     for (const todo of Todo.get(id) || []) {
-      log.info("agent-event", {
-        agent: agent.name,
-        type: "todo-start",
-        desc: todo.action,
+      log.info("wiki editor", {
+        id,
+        task: todo.action,
       });
 
       await run(
@@ -43,12 +42,6 @@ export namespace WikiEditor {
         `,
       );
       todo.status = "completed";
-
-      log.info("agent-event", {
-        agent: agent.name,
-        type: "todo-end",
-        desc: todo.action,
-      });
     }
   };
 
