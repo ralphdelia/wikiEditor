@@ -24,27 +24,32 @@ export namespace WikiEditor {
       tools: [read, write, list, glob, move, patch, remove, search, mkdir],
     });
 
+    let memory = "";
+
     agent.on("agent_tool_start", ({ context }, tool) => {
-      log.info(`tool call ${tool.name}`, { id: context.id });
+      log.info(id, { event: `tool call ${tool.name}` });
+    });
+    agent.on("agent_tool_end", (_evt, tool, output) => {
+      memory += `\n[${tool.name} output]\n${output}`;
     });
 
     const todos = Todo.get(id) || [];
     if (todos.length === 0) log.warn("No todos found");
     for (const todo of todos) {
-      log.info("task start", {
-        id,
-        task: todo.action,
-      });
+      log.info(id, { ["task-start"]: todo.action });
 
       await run(
         agent,
         `
+        Memory: ${memory.trim() || "[none]"}
         Corpus: ${prompt}
         All tasks: ${JSON.stringify(todos, null, 2)}
         Your task: ${todo}
         `,
         { context: { id, prompt } },
       );
+
+      memory += `\n[Task ${todo.id} completed]\n`;
       todo.status = "completed";
     }
   };
