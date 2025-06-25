@@ -15,20 +15,23 @@ import { Service } from "../services";
 import { Log } from "../log";
 
 export namespace WikiEditor {
-  let agent: Agent;
   let log = Log.create("wikieditor");
 
-  const runAgent = async (id: string, prompt: string) => {
-    if (!agent) {
-      agent = new Agent({
-        name: "WikiEditor",
-        instructions: INSTRUCTIONS,
-        tools: [read, write, list, glob, move, patch, remove, search, mkdir],
-      });
-    }
+  const runAgent = async (prompt: string, id: string) => {
+    const agent = new Agent<{ id: string; prompt: string }>({
+      name: "WikiEditor",
+      instructions: INSTRUCTIONS,
+      tools: [read, write, list, glob, move, patch, remove, search, mkdir],
+    });
 
-    for (const todo of Todo.get(id) || []) {
-      log.info("wiki editor", {
+    agent.on("agent_tool_start", ({ context }, tool) => {
+      log.info(`tool call ${tool.name}`, { id: context.id });
+    });
+
+    const todos = Todo.get(id) || [];
+    if (todos.length === 0) log.warn("No todos found");
+    for (const todo of todos) {
+      log.info("task start", {
         id,
         task: todo.action,
       });
@@ -37,9 +40,10 @@ export namespace WikiEditor {
         agent,
         `
         Corpus: ${prompt}
-        All tasks: ${JSON.stringify(Todo.get(todo.id), null, 2)}
+        All tasks: ${JSON.stringify(todos, null, 2)}
         Your task: ${todo}
         `,
+        { context: { id, prompt } },
       );
       todo.status = "completed";
     }
@@ -47,7 +51,7 @@ export namespace WikiEditor {
 
   Service.register("wikieditor", () => {
     Bus.subscribe("todo-publish", async ({ detail }) => {
-      runAgent(detail.id, detail.prompt);
+      await runAgent(detail.prompt, detail.id);
     });
   });
 }

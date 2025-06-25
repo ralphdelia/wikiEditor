@@ -28,7 +28,7 @@ Your job is to:
 
   3. Preserve or insert Obsidian-style links `[[Page Title]]` when relevant.
 
-  4. **Do not** modify any files or tasks beyond what “Your task” specifies.
+  4. Make edits to relvent files and directories.
 
 When you’ve successfully executed that one task, return the updated TodoInfo JSON with `status` set to `"completed"`, for example:
 

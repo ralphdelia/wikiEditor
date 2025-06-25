@@ -58,3 +58,5 @@ await todoWrite({ todos: [
   }
 ]});
 ```
+** Note that you have at maximum 10 tool calls ,including the publish tool call, so plan accordingly! **
+** Note that you have at maximum 10 tool calls ,including the publish tool call, so plan accordingly! **

@@ -10,28 +10,25 @@ import { Service } from "../services";
 import { Log } from "../log";
 
 export namespace Planner {
-  let agent: Agent<{ id: string; prompt: string }, "text">;
   const log = Log.create("planner");
 
   export async function runAgent(prompt: string, id: string) {
-    if (!agent) {
-      agent = new Agent({
-        name: "Planner",
-        instructions: INSTRUCTIONS,
-        tools: [read, search, list, glob, todoWrite],
-      });
-    }
-    try {
-      log.info("planner start", { id });
-      const res = await run(agent, prompt, { context: { id, prompt } });
-      return res;
-    } catch (e) {
-      console.error(e);
-    }
+    const agent = new Agent({
+      name: "Planner",
+      instructions: INSTRUCTIONS,
+      tools: [read, search, list, glob, todoWrite],
+    });
+
+    agent.on("agent_tool_start", ({ context }, tool) => {
+      log.info(`tool call ${tool.name}`, { id: context.id });
+    });
+
+    log.info("planner start", { id });
+    return await run(agent, prompt, { context: { id, prompt } });
   }
 
   Service.register("planner", () => {
-    const unsub = Bus.subscribe("message-incoming", ({ detail }) => {
+    Bus.subscribe("message-incoming", ({ detail }) => {
       runAgent(detail.message, detail.id);
     });
   });
