@@ -6,7 +6,6 @@ import { search } from "../tools/search";
 import { list } from "../tools/list";
 // import { glob } from "../tools/glob";
 import { todoWrite } from "../tools/todo";
-import { Service } from "../services";
 import { Log } from "../log";
 
 export namespace Planner {
@@ -27,9 +26,7 @@ export namespace Planner {
     return await run(agent, prompt, { context: { id, prompt } });
   }
 
-  Service.register("planner", () => {
-    Bus.subscribe("message-incoming", ({ detail }) => {
-      runAgent(detail.message, detail.id);
-    });
+  Bus.subscribe("message-incoming", ({ detail }) => {
+    runAgent(detail.message, detail.id);
   });
 }

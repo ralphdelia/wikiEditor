@@ -22,21 +22,23 @@ export const todoWrite = tool({
 
     if (!id) {
       log.warn("No id passed in todoWrite context.");
-      id = "unknonwn";
+
+      return {
+        output: "",
+        metadata: {
+          published: false,
+        },
+      };
     }
 
-    log.info("todo-publish", {
-      run: id,
-      prompt: prompt.slice(0, 60),
-      todos: "\n" + todos.map((t, i) => `${i + 1}. ${t.action}`).join(".\n"),
-    });
-    Bus.publish("todo-publish", { todos, id, prompt });
+    Todo.set(id, todos);
 
     return {
-      output: JSON.stringify(todos, null, 2),
+      output: todos,
       metadata: {
         title: `${todos.filter((t) => t.status !== "completed").length} todos`,
-        todos,
+        id,
+        prompt,
       },
     };
   },

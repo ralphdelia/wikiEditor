@@ -1,6 +1,5 @@
 import { Bus } from "../bus";
 import { z } from "zod";
-import { Service } from "../services";
 import { Log } from "../log";
 
 export namespace Todo {
@@ -24,11 +23,7 @@ export namespace Todo {
   const storage = new Map<string, TodoInfo[]>();
   const log = Log.create("Todo Service");
   export const get = (id: string) => storage.get(id) || null;
-
-  Service.register("todo", () => {
-    const unsubTodoPublish = Bus.subscribe("todo-publish", ({ detail }) => {
-      const { id, todos } = detail;
-      storage.set(id, todos);
-    });
-  });
+  export const set = (id: string, todos: TodoInfo[]) => {
+    storage.set(id, todos);
+  };
 }

@@ -10,7 +10,6 @@ import { search } from "../tools/search";
 import { mkdir } from "../tools/mkdir";
 import { Bus } from "../bus";
 import { Todo } from "../todo";
-import { Service } from "../services";
 import { Log } from "../log";
 
 export namespace WikiEditor {
@@ -32,7 +31,7 @@ export namespace WikiEditor {
       memory += `\n[${tool.name} output]\n${output}`;
     });
 
-    const todos = Todo.get(id) || [];
+    let todos = Todo.get(id) || [];
     if (todos.length === 0) log.warn("No todos found");
     for (const todo of todos) {
       log.info(id, { ["task-start"]: todo.action });
@@ -53,9 +52,7 @@ export namespace WikiEditor {
     }
   };
 
-  Service.register("wikieditor", () => {
-    Bus.subscribe("todo-publish", async ({ detail }) => {
-      await runAgent(detail.prompt, detail.id);
-    });
+  Bus.subscribe("todo-publish", async ({ detail }) => {
+    await runAgent(detail.prompt, detail.id);
   });
 }
