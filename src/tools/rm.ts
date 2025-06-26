@@ -10,13 +10,13 @@ export const remove = tool({
   description:
     "Remove a file or directory from the vault. Directories will be deleted recursively.",
   parameters: z.object({
-    path: z
+    relPath: z
       .string()
       .describe(
         "Path to the file or directory to remove, relative to the vault root.",
       ),
   }),
-  execute: async ({ path: relPath }) => {
+  execute: async ({ relPath }) => {
     const fullPath = path.resolve(outVault, relPath);
     const vaultRoot = path.resolve(outVault);
 

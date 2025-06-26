@@ -10,7 +10,7 @@ export const patch = tool({
   description:
     "Patch a Markdown file by replacing lines that match given strings.",
   parameters: z.object({
-    path: z
+    relPath: z
       .string()
       .describe("Path to the Markdown file, relative to the vault root."),
     patch: z
@@ -24,7 +24,7 @@ export const patch = tool({
         "List of patch operations, replacing lines based on exact match.",
       ),
   }),
-  execute: async ({ path: relPath, patch }) => {
+  execute: async ({ relPath, patch }) => {
     const vaultRoot = path.resolve(outVault);
     const { allowed, reason } = guardPath(vaultRoot, relPath);
     if (!allowed) {

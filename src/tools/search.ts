@@ -11,22 +11,24 @@ export const search = tool({
     "Search for a term in vault markdown files case-insensitively across optional subdirectory.",
   parameters: z.object({
     term: z.string().describe("Search term to match in file contents"),
-    path: z
+    relDirPath: z
       .string()
       .describe(
         "Optional subdirectory relative to vault root; use empty string to search root.",
       ),
   }),
-  execute: async ({ term, path: relDir }) => {
+  execute: async ({ term, relDirPath }) => {
     const vaultRoot = path.resolve(outVault);
-    const { allowed, reason } = guardPath(vaultRoot, relDir);
+    const { allowed, reason } = guardPath(vaultRoot, relDirPath);
     if (!allowed) {
       return {
         metadata: { count: 0, reason },
         output: "Error: Cannot search outside the vault root.",
       };
     }
-    const baseDir = relDir ? path.resolve(vaultRoot, relDir) : vaultRoot;
+    const baseDir = relDirPath
+      ? path.resolve(vaultRoot, relDirPath)
+      : vaultRoot;
 
     const results: string[] = [];
     const stack: string[] = [baseDir];

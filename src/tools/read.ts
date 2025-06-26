@@ -10,20 +10,20 @@ export const read = tool({
   description:
     "Read a UTF-8 markdown file from the vault; path relative to vault root.",
   parameters: z.object({
-    path: z
+    relPath: z
       .string()
       .describe("File path relative to vault root; must end in '.md'."),
   }),
-  execute: async ({ path: p }) => {
-    if (!p.endsWith(".md")) {
+  execute: async ({ relPath }) => {
+    if (!relPath.endsWith(".md")) {
       return {
         metadata: { read: false, reason: "invalid_extension" },
         output: "Error: Only Markdown (.md) files can be read using this tool.",
       };
     }
 
-    const fullPath = path.join(outVault, p);
-    const { allowed, reason } = guardPath(outVault, p);
+    const fullPath = path.join(outVault, relPath);
+    const { allowed, reason } = guardPath(outVault, relPath);
     if (!allowed) {
       return {
         metadata: { read: false, reason },
@@ -34,13 +34,13 @@ export const read = tool({
     try {
       const content = fs.readFileSync(fullPath, "utf8");
       return {
-        metadata: { read: true, file: p },
+        metadata: { read: true, file: relPath },
         output: content,
       };
     } catch (err) {
       return {
         metadata: { read: false, reason: "read_failed" },
-        output: `Error reading file '${p}': ${(err as Error).message}`,
+        output: `Error reading file '${relPath}': ${(err as Error).message}`,
       };
     }
   },

@@ -11,14 +11,14 @@ export const mkdir = tool({
     "Create a directory in the output vault. The path must be relative to the vault root.",
   parameters: z
     .object({
-      path: z
+      relPath: z
         .string()
         .describe(
           "Directory path to create, relative to the vault root. For example: 'notes/2025'",
         ),
     })
     .describe("Parameters for creating a directory in the vault."),
-  execute: async ({ path: relPath }) => {
+  execute: async ({ relPath }) => {
     const fullPath = path.resolve(outVault, relPath);
 
     const { allowed, reason } = guardPath(outVault, relPath);

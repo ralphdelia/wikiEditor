@@ -10,14 +10,14 @@ export const write = tool({
   description:
     "Write a Markdown (.md) file to the output vault. The path should be relative to the vault root.",
   parameters: z.object({
-    path: z
+    relPath: z
       .string()
       .describe(
         "Path to the Markdown file, relative to the vault root. For example: 'notes/todo.md'",
       ),
     content: z.string().describe("The string content to write to the file"),
   }),
-  execute: async ({ path: relPath, content }) => {
+  execute: async ({ relPath, content }) => {
     if (!relPath.endsWith(".md")) {
       return {
         metadata: { written: false, reason: "invalid_extension" },
