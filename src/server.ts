@@ -3,8 +3,8 @@ import { Hono } from "hono";
 import { serve } from "bun";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import { Bus } from "./bus";
 import { Log } from "./log";
+import { runPlanner } from "./agents/planner";
 
 const app = new Hono();
 let log = Log.create("api");
@@ -25,11 +25,8 @@ app.post(
   (c) => {
     const { messages } = c.req.valid("json");
     messages.forEach((message) => {
-      const payload = { id: crypto.randomUUID(), message };
-      log.info("message-incoming", { id: payload.id });
-      Bus.publish("message-incoming", payload);
+      runPlanner(crypto.randomUUID(), message);
     });
-
     return c.json({ status: "Message received" });
   },
 );

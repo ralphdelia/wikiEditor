@@ -1,10 +1,35 @@
-import { tool, RunContext } from "@openai/agents";
+import { handoff, tool, RunContext } from "@openai/agents";
 import { z } from "zod";
-import { Bus } from "../bus";
-import { Todo } from "../todo";
 import { Log } from "../log";
 import INSTRUCTIONS from "./todoWrite.txt";
-let log = Log.create("todo");
+import { wikiEditor } from "../agents/wikiEditor";
+
+export namespace Todo {
+  export const TodoInfoSchema = z.object({
+    action: z
+      .string()
+      .min(1)
+      .describe("Brief description of the task. (5- 8 words)"),
+    status: z
+      .enum(["pending", "completed"])
+      .describe("Current status of the task"),
+    content: z.string().describe(`
+        A summary of the content relevent for this step
+        or context to provide as reasoning for the action
+        `),
+    id: z.string().describe("Unique identifier for the todo item"),
+  });
+
+  export type TodoInfo = z.infer<typeof TodoInfoSchema>;
+
+  let log = Log.create("todo");
+
+  export const store = new Map<string, z.infer<typeof TodoInfoSchema>[]>(); // in-memory store
+
+  export function getTodos(id: string) {
+    return store.get(id) ?? [];
+  }
+}
 
 export const todoWrite = tool({
   name: "todoWrite",
@@ -13,55 +38,17 @@ export const todoWrite = tool({
     todos: z.array(Todo.TodoInfoSchema).describe("the updated todo list"),
   }),
   execute: async (
-    args: { todos: Todo.TodoInfo[] },
+    { todos }: { todos: Todo.TodoInfo[] },
     opt?: RunContext<{ id: string; prompt: string }>,
   ) => {
-    const todos = args.todos;
-    let id = opt?.context?.id;
-    const prompt = opt?.context?.prompt ?? "";
-
+    const id = opt?.context?.id;
     if (!id) {
-      log.warn("No id passed in todoWrite context.");
-
-      return {
-        output: "",
-        metadata: {
-          published: false,
-        },
-      };
+      return { output: "Missing run id", metadata: { published: false } };
     }
+    console.log(JSON.stringify(todos, null, 2));
 
-    Todo.set(id, todos);
+    Todo.store.set(id, todos);
 
-    return {
-      output: todos,
-      metadata: {
-        title: `${todos.filter((t) => t.status !== "completed").length} todos`,
-        id,
-        prompt,
-      },
-    };
+    return "Handoff to wikieditor";
   },
 });
-
-// export const todoRead = tool({
-//   name: "todoRead",
-//   description: "",
-//   parameters: z.object({}),
-//   execute: async (empty, opt?: RunContext<{ id: string }>) => {
-//     const id = opt?.context.id;
-//     const todos = Todo.get(id!);
-
-//     const title = Array.isArray(todos)
-//       ? `${todos.filter((t) => t.status !== "completed").length} todos`
-//       : todos;
-
-//     return {
-//       output: JSON.stringify(todos, null, 2),
-//       metadata: {
-//         title,
-//         todos,
-//       },
-//     };
-//   },
-// });

@@ -1,6 +1,4 @@
-import { Service } from "./services";
-
-namespace Log {
+export namespace Log {
   function logBlock(title: string, lines: Record<string, string | number>) {
     console.log(`${title}`);
     for (const [label, value] of Object.entries(lines)) {
@@ -24,5 +22,3 @@ namespace Log {
     return { info, warn, error };
   }
 }
-
-export { Log };
