@@ -43,7 +43,7 @@ export namespace WikiEditor {
         Memory: ${memory.trim() || "[none]"}
         Corpus: ${prompt}
         All tasks: ${JSON.stringify(todos, null, 2)}
-        Your task: ${todo}
+        Your task: ${JSON.stringify(todo, null, 2)}
         `,
         { context: { id, prompt } },
       );
