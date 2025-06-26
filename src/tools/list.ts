@@ -10,7 +10,9 @@ export const list = tool({
     "List all files in the output vault recursively. Returns file paths relative to the vault root.",
   parameters: z
     .object({})
-    .describe("No parameters; lists all files in the vault recursively relative to the vault root."),
+    .describe(
+      "No parameters; lists all files in the vault recursively relative to the vault root.",
+    ),
   execute: async () => {
     const results: string[] = [];
     const stack: string[] = [outVault];

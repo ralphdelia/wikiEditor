@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import { tool } from "@openai/agents";
 import { outVault } from "../vault";
+import { guardPath } from "./fsGuard";
 
 export const remove = tool({
   name: "remove",
@@ -19,9 +20,10 @@ export const remove = tool({
     const fullPath = path.resolve(outVault, relPath);
     const vaultRoot = path.resolve(outVault);
 
-    if (!fullPath.startsWith(vaultRoot + path.sep)) {
+    const guard = guardPath(vaultRoot, relPath);
+    if (!guard.allowed) {
       return {
-        metadata: { removed: false, reason: "outside_vault" },
+        metadata: { removed: false, reason: guard.reason },
         output: "Error: Cannot remove files outside the vault root.",
       };
     }

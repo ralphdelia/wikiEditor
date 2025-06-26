@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import { tool } from "@openai/agents";
 import { outVault } from "../vault";
+import { guardPath } from "./fsGuard";
 
 export const patch = tool({
   name: "patch",
@@ -24,7 +25,15 @@ export const patch = tool({
       ),
   }),
   execute: async ({ path: relPath, patch }) => {
-    const fullPath = path.resolve(outVault, relPath);
+    const vaultRoot = path.resolve(outVault);
+    const { allowed, reason } = guardPath(vaultRoot, relPath);
+    if (!allowed) {
+      return {
+        metadata: { patched: false, reason },
+        output: "Error: Cannot patch files outside the vault root.",
+      };
+    }
+    const fullPath = path.resolve(vaultRoot, relPath);
 
     try {
       let text = await fs.readFile(fullPath, "utf8");

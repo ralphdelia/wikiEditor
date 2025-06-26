@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import { tool } from "@openai/agents";
 import { outVault } from "../vault";
+import { guardPath } from "./fsGuard";
 
 export const mkdir = tool({
   name: "mkdir",
@@ -19,12 +20,11 @@ export const mkdir = tool({
     .describe("Parameters for creating a directory in the vault."),
   execute: async ({ path: relPath }) => {
     const fullPath = path.resolve(outVault, relPath);
-    const vaultRoot = path.resolve(outVault);
 
-    // Guard against escaping the vault root
-    if (!fullPath.startsWith(vaultRoot + path.sep)) {
+    const { allowed, reason } = guardPath(outVault, relPath);
+    if (!allowed) {
       return {
-        metadata: { created: false, reason: "outside_vault" },
+        metadata: { created: false, reason },
         output: "Error: Cannot create directories outside the vault root.",
       };
     }

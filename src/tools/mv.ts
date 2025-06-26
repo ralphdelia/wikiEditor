@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import { tool } from "@openai/agents";
 import { outVault } from "../vault";
+import { guardPath } from "./fsGuard";
 
 export const move = tool({
   name: "move",
@@ -20,19 +21,22 @@ export const move = tool({
       ),
   }),
   execute: async ({ from, to }) => {
-    const src = path.resolve(outVault, from);
-    const dest = path.resolve(outVault, to);
     const vaultRoot = path.resolve(outVault);
 
-    if (
-      !src.startsWith(vaultRoot + path.sep) ||
-      !dest.startsWith(vaultRoot + path.sep)
-    ) {
+    const srcGuard = guardPath(vaultRoot, from);
+    const destGuard = guardPath(vaultRoot, to);
+    if (!srcGuard.allowed || !destGuard.allowed) {
       return {
-        metadata: { moved: false, reason: "outside_vault" },
+        metadata: {
+          moved: false,
+          reason: srcGuard.allowed ? destGuard.reason : srcGuard.reason,
+        },
         output: "Error: Cannot move files outside the vault root.",
       };
     }
+
+    const src = path.resolve(vaultRoot, from);
+    const dest = path.resolve(vaultRoot, to);
 
     try {
       await fs.mkdir(path.dirname(dest), { recursive: true });

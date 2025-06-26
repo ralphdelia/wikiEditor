@@ -3,6 +3,7 @@ import { tool } from "@openai/agents";
 import { outVault } from "../vault";
 import { z } from "zod";
 import * as fs from "fs/promises";
+import { guardPath } from "./fsGuard";
 
 export const write = tool({
   name: "write",
@@ -28,9 +29,10 @@ export const write = tool({
     const vaultRoot = path.resolve(outVault);
     const fullPath = path.resolve(outVault, relPath);
 
-    if (!fullPath.startsWith(vaultRoot + path.sep)) {
+    const { allowed, reason } = guardPath(vaultRoot, relPath);
+    if (!allowed) {
       return {
-        metadata: { written: false, reason: "outside_vault" },
+        metadata: { written: false, reason },
         output: "Error: Cannot write files outside the vault root.",
       };
     }

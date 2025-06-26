@@ -3,7 +3,6 @@ import INSTRUCTIONS from "./prompts/wikiEditor.txt";
 import { write } from "../tools/write";
 import { read } from "../tools/read";
 import { list } from "../tools/list";
-import { glob } from "../tools/glob";
 import { move } from "../tools/mv";
 import { patch } from "../tools/patch";
 import { remove } from "../tools/rm";
@@ -21,7 +20,7 @@ export namespace WikiEditor {
     const agent = new Agent<{ id: string; prompt: string }>({
       name: "WikiEditor",
       instructions: INSTRUCTIONS,
-      tools: [read, write, list, glob, move, patch, remove, search, mkdir],
+      tools: [read, write, list, move, patch, remove, search, mkdir],
     });
 
     let memory = "";

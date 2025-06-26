@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { tool } from "@openai/agents";
 import { outVault } from "../vault";
+import { guardPath } from "./fsGuard";
 
 export const search = tool({
   name: "search",
@@ -17,7 +18,15 @@ export const search = tool({
       ),
   }),
   execute: async ({ term, path: relDir }) => {
-    const baseDir = relDir ? path.resolve(outVault, relDir) : outVault;
+    const vaultRoot = path.resolve(outVault);
+    const { allowed, reason } = guardPath(vaultRoot, relDir);
+    if (!allowed) {
+      return {
+        metadata: { count: 0, reason },
+        output: "Error: Cannot search outside the vault root.",
+      };
+    }
+    const baseDir = relDir ? path.resolve(vaultRoot, relDir) : vaultRoot;
 
     const results: string[] = [];
     const stack: string[] = [baseDir];
@@ -58,14 +67,14 @@ export const search = tool({
       if (truncated) break;
     }
 
-    const output: string[] = [];
+    const outputLines: string[] = [];
     if (results.length === 0) {
-      output.push("No matches found.");
+      outputLines.push("No matches found.");
     } else {
-      output.push(...results);
+      outputLines.push(...results);
       if (truncated) {
-        output.push("");
-        output.push("(Results are truncated. Try narrowing your search.)");
+        outputLines.push("");
+        outputLines.push("(Results are truncated. Try narrowing your search.)");
       }
     }
 
@@ -76,7 +85,7 @@ export const search = tool({
         directory: path.relative(outVault, baseDir),
         term,
       },
-      output: output.join("\n"),
+      output: outputLines.join("\n"),
     };
   },
 });
